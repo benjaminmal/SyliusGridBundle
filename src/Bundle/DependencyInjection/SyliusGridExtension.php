@@ -15,6 +15,7 @@ namespace Sylius\Bundle\GridBundle\DependencyInjection;
 
 use Sylius\Bundle\CurrencyBundle\SyliusCurrencyBundle;
 use Sylius\Bundle\GridBundle\SyliusGridBundle;
+use Symfony\Component\Config\Exception\FileLocatorFileNotFoundException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
@@ -46,7 +47,11 @@ final class SyliusGridExtension extends Extension
                 ), \E_USER_DEPRECATED);
             }
 
-            $loader->load(sprintf('services/integrations/%s.xml', $enabledDriver));
+            try {
+                $loader->load(sprintf('services/integrations/%s.xml', $enabledDriver));
+            } catch (FileLocatorFileNotFoundException $e) {
+                continue;
+            }
         }
 
         if (\class_exists(SyliusCurrencyBundle::class)) {
